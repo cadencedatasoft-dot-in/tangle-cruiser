@@ -61,13 +61,18 @@
         }
       }
     }
+    accounts = accounts;
     showaddaccount = false;
   }
 
   const filterAccounts = (filterstr: string) => {
     if (filterstr !== "") {
-      console.log("FA :"+filterstr);
-      let accs = accounts.filter((ele) => (ele.amount === parseInt(filterstr))? true : false) //|| (ele.key.includes(filterstr));
+      console.log("FA :" + filterstr);
+      let accs = accounts.filter(
+        (ele) =>
+          (ele.amount === parseInt(filterstr) ? true : false) ||
+          ele.key.includes(filterstr)
+      );
       console.log(accs);
       return accs;
     } else {
@@ -76,17 +81,12 @@
   };
 
   const filterCriteria = (event: CustomEvent<string>) => {
-    if (event && event.detail ) {
+    if (event && event.detail) {
       filterstr = event.detail;
       console.log(filterstr);
       accounts = accounts;
     }
   };
-  // filter !== ""
-  //   ? accs.filter((t) => !t.amount)
-  //   : filter === "amount"
-  //   ? accs.filter((t) => t.amount)
-  //   : accs;
 
   function updateAccount(account: AccountType) {
     const i = accounts.findIndex((t) => t.id === account.id);
@@ -109,31 +109,33 @@
       >
     </CardBody>
   </Card>
-  <Filter on:filteracc={filterCriteria} />
-  <div
-    class="overflow-auto mb-3 mb-md-0 mr-md-3 border p-3"
-    style="max-height: 280px;"
-  >
-    <ul class="todo-list stack-large" aria-labelledby="list-heading">
-      {#each filterAccounts(filterstr) as account (account.id)}
-        <li class="todo">
-          <div class="row justify-content-md-center">
-            <div class="col">
-              <Account
-                {account}
-                on:update={(e) => updateAccount(e.detail)}
-                on:remove={(e) => removeAccount(e.detail)}
-              />
+  <div class="overflow-auto mb-3 mb-md-0 mr-md-3 border p-3">
+    <Filter on:filteracc={filterCriteria} />
+    <div
+      class="overflow-auto mb-3 mb-md-0 mr-md-3 border p-3"
+      style="max-height: 280px;"
+    >
+      <ul class="todo-list stack-large" aria-labelledby="list-heading">
+        {#each filterAccounts(filterstr) as account (account.id)}
+          <li class="todo">
+            <div class="row justify-content-md-center">
+              <div class="col">
+                <Account
+                  {account}
+                  on:update={(e) => updateAccount(e.detail)}
+                  on:remove={(e) => removeAccount(e.detail)}
+                />
+              </div>
             </div>
-          </div>
-        </li>
-      {:else}
-        <li>Nothing to do here!</li>
-      {/each}
-    </ul>
+          </li>
+        {:else}
+          <li>Nothing to do here!</li>
+        {/each}
+      </ul>
+    </div>
+    {#if showaddaccount}
+      <AddAccount on:updateacclist={addAcc} />
+    {/if}
   </div>
-  {#if showaddaccount}
-    <AddAccount on:updateacclist={addAcc} />
-  {/if}
   <MoreActions {accounts} on:showdlg={showAddAccount} />
 </div>

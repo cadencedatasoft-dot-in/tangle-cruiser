@@ -15,11 +15,11 @@
 <form
 on:submit|preventDefault={filterAccounts}
 >
-  <Label for="node">Filter on account or amount</Label>
+  <label for="node">Filter on account or amount</label>
   <input
     bind:value={filtertext}
     type="text"
-    id="todo-0"
+    id="todo"
     autocomplete="off"
     class="input input__lg"
     on:keypress={filterAccounts}
