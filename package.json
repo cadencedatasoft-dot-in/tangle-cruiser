@@ -1,0 +1,31 @@
+{
+  "name": "tangle-cruiser",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "start": "sirv public",
+    "check": "svelte-check --tsconfig ./tsconfig.json"
+  },
+  "devDependencies": {
+    "@mdi/js": "^6.7.96",
+    "@rollup/plugin-commonjs": "^12.0.0",
+    "@rollup/plugin-node-resolve": "^8.4.0",
+    "@rollup/plugin-typescript": "^8.0.0",
+    "@smui/button": "^6.0.0-beta.16",
+    "@smui/fab": "^6.0.0-beta.16",
+    "@tsconfig/svelte": "^2.0.1",
+    "rollup": "^2.23.0",
+    "rollup-plugin-livereload": "^1.0.0",
+    "rollup-plugin-svelte": "^6.1.1",
+    "rollup-plugin-terser": "^5.1.2",
+    "svelte-check": "^2.7.1",
+    "svelte-preprocess": "^4.10.6",
+    "tslib": "^2.0.0",
+    "typescript": "^4.6.4"
+  },
+  "dependencies": {
+    "sirv-cli": "^0.4.4",
+    "sveltestrap": "^5.9.0"
+  }
+}
