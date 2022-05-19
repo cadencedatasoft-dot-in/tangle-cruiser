@@ -4,14 +4,28 @@
   import Account from "./Account.svelte";
   import MoreActions from "./MoreActions.svelte";
   import AddAccount from "./AddAccount.svelte";
-  import type { AddAccountType, AccountsType, AccountType } from "../utils/types";
+  import type {
+    AddAccountType,
+    AccountsType,
+    AccountType,
+  } from "../utils/types";
+  import {
+    Button,
+    Card,
+    CardBody,
+    CardHeader,
+    CardSubtitle,
+    CardText,
+    CardTitle,
+  } from "sveltestrap";
+  import Filter from "./Filter.svelte";
 
-  export let accounts = [];
+  export let accounts: AccountsType = [];
 
-  let showaddaccount:boolean = false;
-  let newAccId:number;
-  let filter:string = "all";
+  let showaddaccount: boolean = false;
+  let newAccId: number;
 
+  $: filterstr = "";
   $: totalaccounts = accounts.length;
   $: totalamount = 0;
   $: {
@@ -22,11 +36,11 @@
     }
   }
 
-  function removeTodo(account: AccountType) {
+  function removeAccount(account: AccountType) {
     accounts = accounts.filter((t) => t.id !== account.id);
   }
 
-  function validateKey(newkey:string) {
+  function validateKey(newkey: string) {
     if (newkey.length) {
       //Further validation
       return true;
@@ -50,14 +64,31 @@
     showaddaccount = false;
   }
 
-  const filterTodos = (filter:string, accs:AccountsType) =>
-    filter === "active"
-      ? accs.filter((t) => !t.amount)
-      : filter === "amount"
-      ? accs.filter((t) => t.amount)
-      : accs;
+  const filterAccounts = (filterstr: string) => {
+    if (filterstr !== "") {
+      console.log("FA :"+filterstr);
+      let accs = accounts.filter((ele) => (ele.amount === parseInt(filterstr))? true : false) //|| (ele.key.includes(filterstr));
+      console.log(accs);
+      return accs;
+    } else {
+      return accounts;
+    }
+  };
 
-  function updateTodo(account: AccountType) {
+  const filterCriteria = (event: CustomEvent<string>) => {
+    if (event && event.detail ) {
+      filterstr = event.detail;
+      console.log(filterstr);
+      accounts = accounts;
+    }
+  };
+  // filter !== ""
+  //   ? accs.filter((t) => !t.amount)
+  //   : filter === "amount"
+  //   ? accs.filter((t) => t.amount)
+  //   : accs;
+
+  function updateAccount(account: AccountType) {
     const i = accounts.findIndex((t) => t.id === account.id);
     accounts[i] = { ...accounts[i], ...account };
   }
@@ -68,23 +99,30 @@
 </script>
 
 <div class="todoapp stack-large">
-  <h2 id="list-heading">
-    Total balance in these {totalaccounts} accounts is {totalamount}
-  </h2>
-
+  <Card class="mb-3 shadow p-3 mb-5 bg-white rounded">
+    <CardHeader>
+      <CardTitle>Your Accounts Balances</CardTitle>
+    </CardHeader>
+    <CardBody>
+      <CardSubtitle
+        >Total balance in these {totalaccounts} accounts is {totalamount}</CardSubtitle
+      >
+    </CardBody>
+  </Card>
+  <Filter on:filteracc={filterCriteria} />
   <div
     class="overflow-auto mb-3 mb-md-0 mr-md-3 border p-3"
     style="max-height: 280px;"
   >
     <ul class="todo-list stack-large" aria-labelledby="list-heading">
-      {#each filterTodos(filter, accounts) as account (account.id)}
+      {#each filterAccounts(filterstr) as account (account.id)}
         <li class="todo">
           <div class="row justify-content-md-center">
             <div class="col">
               <Account
                 {account}
-                on:update={(e) => updateTodo(e.detail)}
-                on:remove={(e) => removeTodo(e.detail)}
+                on:update={(e) => updateAccount(e.detail)}
+                on:remove={(e) => removeAccount(e.detail)}
               />
             </div>
           </div>
