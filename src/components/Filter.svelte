@@ -1,27 +1,38 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
   import { FormGroup, Input, Label } from "sveltestrap";
+  import {
+    Button,
+    Card,
+    CardBody,
+    CardHeader,
+    CardSubtitle,
+    CardText,
+    CardTitle,
+  } from "sveltestrap";
 
   let filtertext = "";
   const dispatch = createEventDispatcher();
   function filterAccounts(e: Event) {
     let val = (e.target as HTMLInputElement).value.trim();
     let succcess = dispatch("filteracc", val);
-    console.log(val)
+    console.log(val);
     return succcess;
   }
 </script>
 
-<form
-on:submit|preventDefault={filterAccounts}
->
-  <label for="node">Filter on account or amount</label>
-  <input
-    bind:value={filtertext}
-    type="text"
-    id="todo"
-    autocomplete="off"
-    class="input input__lg"
-    on:keypress={filterAccounts}
-  />
-</form>
+<Card>
+  <CardBody>
+    <form on:submit|preventDefault={filterAccounts}>
+      <Label class="">Filter on account or amount</Label>
+      <Input
+        bind:value={filtertext}
+        type="text"
+        id="todo"
+        autocomplete="off"
+        class="mb-3"
+        on:keypress={filterAccounts}
+      />
+    </form>
+  </CardBody>
+</Card>

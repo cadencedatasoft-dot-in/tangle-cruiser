@@ -1,6 +1,5 @@
 <!-- Accounts.svelte -->
 <script lang="ts">
-  // import FilterButton from "./FilterButton.svelte";
   import Account from "./Account.svelte";
   import MoreActions from "./MoreActions.svelte";
   import AddAccount from "./AddAccount.svelte";  
