@@ -14,8 +14,10 @@
   export let newKey: string = "";
 
   const dispatch = createEventDispatcher();
-  const updateAccounts = (value: AddAccountType) =>
+  const updateAccounts = (value: AddAccountType) => {
+    console.log(value)
     dispatch("updateacclist", value);
+  }
 </script>
 
 <div>

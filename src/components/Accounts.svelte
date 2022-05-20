@@ -3,7 +3,8 @@
   // import FilterButton from "./FilterButton.svelte";
   import Account from "./Account.svelte";
   import MoreActions from "./MoreActions.svelte";
-  import AddAccount from "./AddAccount.svelte";
+  import AddAccount from "./AddAccount.svelte";  
+  import Filter from "./Filter.svelte";
   import type {
     AddAccountType,
     AccountsType,
@@ -18,7 +19,6 @@
     CardText,
     CardTitle,
   } from "sveltestrap";
-  import Filter from "./Filter.svelte";
 
   export let accounts: AccountsType = [];
 
@@ -52,15 +52,18 @@
     if (newkey && newkey.detail && newkey.detail) {
       let detail: AddAccountType = newkey.detail;
       if (detail.ok) {
+
         let key = detail.key;
         if (validateKey(key)) {
+          let newacc: AccountType = { id: newAccId, key: key, amount: 0 };
           accounts = [
             ...accounts,
-            { id: newAccId, key: detail.key, amount: 0 },
+            newacc
           ];
         }
       }
     }
+    filterstr = filterstr;
     accounts = accounts;
     showaddaccount = false;
   }
@@ -88,11 +91,6 @@
     }
   };
 
-  function updateAccount(account: AccountType) {
-    const i = accounts.findIndex((t) => t.id === account.id);
-    accounts[i] = { ...accounts[i], ...account };
-  }
-
   function showAddAccount() {
     showaddaccount = true;
   }
@@ -117,12 +115,12 @@
     >
       <ul class="todo-list stack-large" aria-labelledby="list-heading">
         {#each filterAccounts(filterstr) as account (account.id)}
+          {accounts.length}
           <li class="todo">
             <div class="row justify-content-md-center">
               <div class="col">
                 <Account
                   {account}
-                  on:update={(e) => updateAccount(e.detail)}
                   on:remove={(e) => removeAccount(e.detail)}
                 />
               </div>
