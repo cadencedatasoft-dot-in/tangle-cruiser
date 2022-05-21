@@ -1,14 +1,9 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
-  import { FormGroup, Input, Label } from "sveltestrap";
+  import { Input, Label } from "sveltestrap";
   import {
-    Button,
     Card,
     CardBody,
-    CardHeader,
-    CardSubtitle,
-    CardText,
-    CardTitle,
   } from "sveltestrap";
 
   let filtertext = "";

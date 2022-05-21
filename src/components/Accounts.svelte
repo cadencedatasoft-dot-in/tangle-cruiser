@@ -2,7 +2,7 @@
 <script lang="ts">
   import Account from "./Account.svelte";
   import MoreActions from "./MoreActions.svelte";
-  import AddAccount from "./AddAccount.svelte";  
+  import AddAccount from "./AddAccount.svelte";
   import Filter from "./Filter.svelte";
   import type {
     AddAccountType,
@@ -10,14 +10,16 @@
     AccountType,
   } from "../utils/types";
   import {
-    Button,
     Card,
     CardBody,
     CardHeader,
     CardSubtitle,
-    CardText,
     CardTitle,
   } from "sveltestrap";
+  import { getBalance } from "tangle-connect";
+
+  export const API_ENDPOINT =
+    "https://api.lb-0.h.chrysalis-devnet.iota.cafe:443";
 
   export let accounts: AccountsType = [];
 
@@ -25,8 +27,9 @@
   let newAccId: number;
 
   $: filterstr = "";
+  $: filteredtotal = accounts.length
   $: totalaccounts = accounts.length;
-  $: totalamount = 0;
+  $: filteredtotalamount = 0;
   $: {
     if (totalaccounts === 0) {
       newAccId = 1;
@@ -35,30 +38,39 @@
     }
   }
 
-  function removeAccount(account: AccountType) {
+  function removeAccount(account: AccountType): void {
     accounts = accounts.filter((t) => t.id !== account.id);
   }
 
-  function validateKey(newkey: string) {
+  function validateKey(newkey: string): boolean {
     if (newkey.length) {
-      //Further validation
-      return true;
+      let rexp = new RegExp("[a-z0-9]");
+      if (rexp.test(newkey)) {
+        let obj = accounts.find(o => o.key === newkey);
+        if(!obj){
+          return true;
+        }
+      }
     }
     return false;
   }
 
-  function addAcc(newkey: CustomEvent<AddAccountType>) {
+  async function addAcc(newkey: CustomEvent<AddAccountType>) {
     if (newkey && newkey.detail && newkey.detail) {
       let detail: AddAccountType = newkey.detail;
       if (detail.ok) {
-
-        let key = detail.key;
+        let key = detail.key.trim();
         if (validateKey(key)) {
-          let newacc: AccountType = { id: newAccId, key: key, amount: 0 };
-          accounts = [
-            ...accounts,
-            newacc
-          ];
+          getBalance(key).then((bal)=>{
+            let newacc: AccountType = { id: newAccId, key: key, amount: bal?bal:0 };
+            console.log(newacc);
+
+            accounts = [...accounts, newacc];
+          }).catch(() => {
+            let newacc: AccountType = { id: newAccId, key: key, amount: 0 };
+            console.log(newacc);
+            accounts = [...accounts, newacc];            
+          })
         }
       }
     }
@@ -69,15 +81,23 @@
 
   const filterAccounts = (filterstr: string) => {
     if (filterstr !== "") {
-      console.log("FA :" + filterstr);
       let accs = accounts.filter(
         (ele) =>
           (ele.amount === parseInt(filterstr) ? true : false) ||
           ele.key.includes(filterstr)
       );
-      console.log(accs);
+      filteredtotalamount = 0;
+      accs.forEach(acc => {
+        filteredtotalamount += acc.amount
+      });
+      filteredtotal = accs.length;
       return accs;
     } else {
+      filteredtotalamount = 0;
+      accounts.forEach(acc => {
+        filteredtotalamount += acc.amount
+      });
+      filteredtotal = accounts.length;
       return accounts;
     }
   };
@@ -102,7 +122,7 @@
     </CardHeader>
     <CardBody>
       <CardSubtitle
-        >Total balance in these {totalaccounts} accounts is {totalamount}</CardSubtitle
+        >Total balance in these {filteredtotal} accounts is {filteredtotalamount}</CardSubtitle
       >
     </CardBody>
   </Card>
@@ -118,10 +138,7 @@
           <li class="todo">
             <div class="row justify-content-md-center">
               <div class="col">
-                <Account
-                  {account}
-                  on:remove={(e) => removeAccount(e.detail)}
-                />
+                <Account {account} on:remove={(e) => removeAccount(e.detail)} />
               </div>
             </div>
           </li>

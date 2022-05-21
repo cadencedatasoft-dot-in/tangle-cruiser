@@ -1,13 +1,11 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
   import type { AddAccountType } from "../utils/types";
+  import { Input } from "sveltestrap";
   import {
-    Button,
     Card,
     CardBody,
     CardHeader,
-    CardSubtitle,
-    CardText,
     CardTitle,
   } from "sveltestrap";
 
@@ -15,9 +13,9 @@
 
   const dispatch = createEventDispatcher();
   const updateAccounts = (value: AddAccountType) => {
-    console.log(value)
+    console.log(value);
     dispatch("updateacclist", value);
-  }
+  };
 </script>
 
 <div>
@@ -26,17 +24,17 @@
       updateAccounts({ key: newKey, ok: true });
     }}
   >
-    <Card class="mb-3 shadow p-3 mb-5 bg-white rounded">
+    <Card class="mt-3 shadow p-3 mb-5 bg-white rounded">
       <CardHeader>
         <CardTitle>Add new account to check balance</CardTitle>
       </CardHeader>
       <CardBody>
-        <input
+        <Input
           bind:value={newKey}
           type="text"
           id="todo-0"
           autocomplete="off"
-          class="input input__lg"
+          class="mb-3"
         />
         <div class="btn-group">
           <button

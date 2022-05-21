@@ -25,9 +25,9 @@
     <CardTitle>Account #{account.id}</CardTitle>
   </CardHeader>
   <CardBody>
-    <CardSubtitle>Account Key</CardSubtitle>
+    <CardSubtitle>Account: {account.key}</CardSubtitle>
     <CardText>
-      {account.key}
+      Balance: {account.amount}
     </CardText>
     <Button on:click={onRemove}>Remove</Button>
   </CardBody>
