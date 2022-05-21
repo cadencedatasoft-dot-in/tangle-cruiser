@@ -12,6 +12,8 @@
   export let newKey: string = "";
 
   const dispatch = createEventDispatcher();
+
+  //Dispatch message to parent for addition of new account 
   const updateAccounts = (value: AddAccountType) => {
     console.log(value);
     dispatch("updateacclist", value);

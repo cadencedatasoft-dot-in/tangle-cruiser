@@ -15,6 +15,7 @@
 
   const dispatch = createEventDispatcher();
 
+  //Dispatch message to parent for removal of account 
   function onRemove() {
     dispatch("remove", account); // emit remove event
   }

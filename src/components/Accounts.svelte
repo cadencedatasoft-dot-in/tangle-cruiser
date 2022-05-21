@@ -1,4 +1,3 @@
-<!-- Accounts.svelte -->
 <script lang="ts">
   import Account from "./Account.svelte";
   import MoreActions from "./MoreActions.svelte";
@@ -17,18 +16,19 @@
     CardTitle,
   } from "sveltestrap";
   import { getBalance } from "tangle-connect";
-  import { onMount } from 'svelte';
+  import { onMount } from "svelte";
 
   export const API_ENDPOINT =
     "https://api.lb-0.h.chrysalis-devnet.iota.cafe:443";
 
   export let accounts: AccountsType = [];
 
+  const POLLING_INTERVEL = 20000;
   let showaddaccount: boolean = false;
   let newAccId: number;
 
   $: filterstr = "";
-  $: filteredtotal = accounts.length
+  $: filteredtotal = accounts.length;
   $: totalaccounts = accounts.length;
   $: filteredtotalamount = 0;
   $: {
@@ -39,33 +39,40 @@
     }
   }
 
-  function pollandUpdate(){
-    accounts.forEach(acc => {
-      getBalance(acc.key).then((bal)=>{
-        if(bal){
-          if(acc.amount !== bal){
+  //Poll each account for updated balance
+  function pollandUpdate(): void {
+    accounts.forEach((acc) => {
+      getBalance(acc.key)
+        .then((bal) => {
+          if (bal) {
+            if (acc.amount !== bal) {
               acc.amount = bal;
-              accounts = accounts;
+            }
           }
-        }
-      });
-    })
+        })
+        .catch(() => {
+          console.log("Non valid address");
+        });
+    });
+    accounts = accounts;
   }
 
   onMount(async () => {
-    setTimeout(pollandUpdate, 15000)
-	});
+    setInterval(pollandUpdate, POLLING_INTERVEL);
+  });
 
+  //Remove account from the accounts list
   function removeAccount(account: AccountType): void {
     accounts = accounts.filter((t) => t.id !== account.id);
   }
 
+  //Once the user adds a new account, verify the account key is valid 
   function validateKey(newkey: string): boolean {
     if (newkey.length) {
       let rexp = new RegExp("[a-z0-9]");
       if (rexp.test(newkey)) {
-        let obj = accounts.find(o => o.key === newkey);
-        if(!obj){
+        let obj = accounts.find((o) => o.key === newkey);
+        if (!obj) {
           return true;
         }
       }
@@ -73,19 +80,26 @@
     return false;
   }
 
+  //Fetch balance from the network and then add the account to the list
   async function addAcc(newkey: CustomEvent<AddAccountType>) {
     if (newkey && newkey.detail && newkey.detail) {
       let detail: AddAccountType = newkey.detail;
       if (detail.ok) {
         let key = detail.key.trim();
         if (validateKey(key)) {
-          getBalance(key).then((bal)=>{
-            let newacc: AccountType = { id: newAccId, key: key, amount: bal?bal:0 };
-            accounts = [...accounts, newacc];
-          }).catch(() => {
-            let newacc: AccountType = { id: newAccId, key: key, amount: 0 };
-            accounts = [...accounts, newacc];            
-          })
+          getBalance(key)
+            .then((bal) => {
+              let newacc: AccountType = {
+                id: newAccId,
+                key: key,
+                amount: bal ? bal : 0,
+              };
+              accounts = [...accounts, newacc];
+            })
+            .catch(() => {
+              let newacc: AccountType = { id: newAccId, key: key, amount: 0 };
+              accounts = [...accounts, newacc];
+            });
         }
       }
     }
@@ -94,6 +108,7 @@
     showaddaccount = false;
   }
 
+  //Use filter text to lookup keys and balances and return only matching
   const filterAccounts = (filterstr: string) => {
     if (filterstr !== "") {
       let accs = accounts.filter(
@@ -102,21 +117,22 @@
           ele.key.includes(filterstr)
       );
       filteredtotalamount = 0;
-      accs.forEach(acc => {
-        filteredtotalamount += acc.amount
+      accs.forEach((acc) => {
+        filteredtotalamount += acc.amount;
       });
       filteredtotal = accs.length;
       return accs;
     } else {
       filteredtotalamount = 0;
-      accounts.forEach(acc => {
-        filteredtotalamount += acc.amount
+      accounts.forEach((acc) => {
+        filteredtotalamount += acc.amount;
       });
       filteredtotal = accounts.length;
       return accounts;
     }
   };
 
+  //Capture filter text
   const filterCriteria = (event: CustomEvent<string>) => {
     if (event && event.detail) {
       filterstr = event.detail;
@@ -125,8 +141,14 @@
     }
   };
 
+  //Show add account card
   function showAddAccount() {
     showaddaccount = true;
+  }
+
+  //Reset filter to show all the accounts
+  function resetFilter() {
+    accounts = [...accounts];
   }
 </script>
 
@@ -142,7 +164,7 @@
     </CardBody>
   </Card>
   <div class="overflow-auto mb-3 mb-md-0 mr-md-3 border p-3">
-    <Filter on:filteracc={filterCriteria} />
+    <Filter on:filteracc={filterCriteria} on:filteraccreset={resetFilter} />
     <div
       class="overflow-auto mb-3 mb-md-0 mr-md-3 border p-3"
       style="max-height: 280px;"
@@ -162,9 +184,12 @@
         {/each}
       </ul>
     </div>
-    {#if showaddaccount}
-      <AddAccount on:updateacclist={addAcc} />
-    {/if}
+    <div class="row justify-content-md-center">
+      {#if showaddaccount}
+        <AddAccount on:updateacclist={addAcc} />
+      {:else}
+        <MoreActions {accounts} on:showdlg={showAddAccount} />
+      {/if}
+    </div>
   </div>
-  <MoreActions {accounts} on:showdlg={showAddAccount} />
 </div>

@@ -8,6 +8,8 @@
   }[];
 
   const dispatch = createEventDispatcher();
+
+  //Dispatch message to parent for showing add new account card 
   const showDialog = () => dispatch("showdlg", accounts);
 </script>
 
