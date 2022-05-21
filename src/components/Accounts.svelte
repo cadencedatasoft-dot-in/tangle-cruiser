@@ -16,7 +16,8 @@
     CardSubtitle,
     CardTitle,
   } from "sveltestrap";
-  import { getBalance } from "tangle-connect";
+  import { getBalance, watchAddress, startWatching, stopWatching} from "tangle-connect";
+  import { onMount } from 'svelte';
 
   export const API_ENDPOINT =
     "https://api.lb-0.h.chrysalis-devnet.iota.cafe:443";
@@ -37,6 +38,32 @@
       newAccId = Math.max(...accounts.map((t) => t.id)) + 1;
     }
   }
+
+  let callbackGetBalance = (key: string, amount: number) => {
+    accounts.find((o) => {
+      if(o.key === key){
+        o.amount = amount;
+      }})
+
+    setTimeout(pollandUpdate, 15000)
+  }
+
+  function pollandUpdate(){
+    accounts.forEach(acc => {
+      getBalance(acc.key).then((bal)=>{
+        if(bal){
+          if(acc.amount !== bal){
+              acc.amount = bal;
+              accounts = accounts;
+          }
+        }
+      });
+    })
+  }
+
+  onMount(async () => {
+		startWatching(callbackGetBalance);
+	});
 
   function removeAccount(account: AccountType): void {
     accounts = accounts.filter((t) => t.id !== account.id);
@@ -63,14 +90,12 @@
         if (validateKey(key)) {
           getBalance(key).then((bal)=>{
             let newacc: AccountType = { id: newAccId, key: key, amount: bal?bal:0 };
-            console.log(newacc);
-
             accounts = [...accounts, newacc];
           }).catch(() => {
             let newacc: AccountType = { id: newAccId, key: key, amount: 0 };
-            console.log(newacc);
             accounts = [...accounts, newacc];            
           })
+          watchAddress(key);
         }
       }
     }
