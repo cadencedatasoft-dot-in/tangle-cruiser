@@ -16,7 +16,7 @@
     CardSubtitle,
     CardTitle,
   } from "sveltestrap";
-  import { getBalance, watchAddress, startWatching, stopWatching} from "tangle-connect";
+  import { getBalance } from "tangle-connect";
   import { onMount } from 'svelte';
 
   export const API_ENDPOINT =
@@ -39,15 +39,6 @@
     }
   }
 
-  let callbackGetBalance = (key: string, amount: number) => {
-    accounts.find((o) => {
-      if(o.key === key){
-        o.amount = amount;
-      }})
-
-    setTimeout(pollandUpdate, 15000)
-  }
-
   function pollandUpdate(){
     accounts.forEach(acc => {
       getBalance(acc.key).then((bal)=>{
@@ -62,7 +53,7 @@
   }
 
   onMount(async () => {
-		startWatching(callbackGetBalance);
+    setTimeout(pollandUpdate, 15000)
 	});
 
   function removeAccount(account: AccountType): void {
@@ -95,7 +86,6 @@
             let newacc: AccountType = { id: newAccId, key: key, amount: 0 };
             accounts = [...accounts, newacc];            
           })
-          watchAddress(key);
         }
       }
     }
