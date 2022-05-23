@@ -145,11 +145,6 @@
   function showAddAccount() {
     showaddaccount = true;
   }
-
-  //Reset filter to show all the accounts
-  function resetFilter() {
-    accounts = [...accounts];
-  }
 </script>
 
 <div class="todoapp stack-large">
@@ -164,14 +159,14 @@
     </CardBody>
   </Card>
   <div class="overflow-auto mb-3 mb-md-0 mr-md-3 border p-3">
-    <Filter on:filteracc={filterCriteria} on:filteraccreset={resetFilter} />
+    <Filter on:filteracc={filterCriteria} />
     <div
       class="overflow-auto mb-3 mb-md-0 mr-md-3 border p-3"
       style="max-height: 280px;"
     >
       <ul class="todo-list stack-large" aria-labelledby="list-heading">
         {#each filterAccounts(filterstr) as account (account.id)}
-          {accounts.length}
+        {((accounts) && accounts.length)? ' ': '_'}
           <li class="todo">
             <div class="row justify-content-md-center">
               <div class="col">

@@ -19,13 +19,6 @@
     console.log(val);
     return succcess;
   }
-
-  //Dispatch message to parent for resetting filter 
-  function resetFilter(e: Event) {
-    filtertext = "";
-    const succcess = dispatch("filteraccreset", "");
-    return succcess;
-  }
 </script>
 
 <Card>
@@ -40,7 +33,7 @@
             id="todo"
             autocomplete="off"
             class="mb-3"
-            on:keypress={filterAccounts}
+            on:keydown={filterAccounts}
           />
         </div>
       </div>
