@@ -66,7 +66,7 @@
     accounts = accounts.filter((t) => t.id !== account.id);
   }
 
-  //Once the user adds a new account, verify the account key is valid 
+  //Once the user adds a new account, verify the account key is valid
   function validateKey(newkey: string): boolean {
     if (newkey.length) {
       let rexp = new RegExp("[a-z0-9]");
@@ -166,7 +166,7 @@
     >
       <ul class="todo-list stack-large" aria-labelledby="list-heading">
         {#each filterAccounts(filterstr) as account (account.id)}
-        {((accounts) && accounts.length)? ' ': '_'}
+          {accounts && accounts.length ? " " : "_"}
           <li class="todo">
             <div class="row justify-content-md-center">
               <div class="col">
@@ -183,7 +183,7 @@
       {#if showaddaccount}
         <AddAccount on:updateacclist={addAcc} />
       {:else}
-        <MoreActions {accounts} on:showdlg={showAddAccount} />
+          <MoreActions {accounts} on:showdlg={showAddAccount} />
       {/if}
     </div>
   </div>

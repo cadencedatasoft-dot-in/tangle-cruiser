@@ -21,7 +21,7 @@
   }
 </script>
 
-<Card class="mb-3 shadow p-3 mb-5 bg-white rounded ">
+<Card class="mb-0 shadow p-3 bg-white rounded ">
   <CardHeader>
     <CardTitle>Account #{account.id}</CardTitle>
   </CardHeader>

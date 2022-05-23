@@ -13,7 +13,7 @@
   const showDialog = () => dispatch("showdlg", accounts);
 </script>
 
-<div class="col col-lg-2">
+<div class="mt-3 col col-lg-3">
   <button type="button" class="btn btn__primary" on:click={showDialog}>
     Add Account
   </button>
