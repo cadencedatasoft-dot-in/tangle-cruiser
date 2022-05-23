@@ -16,7 +16,6 @@
         succcess = dispatch("filteracc", val);
       }
     }
-    console.log(val);
     return succcess;
   }
 </script>
