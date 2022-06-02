@@ -1,5 +1,5 @@
-# Steps to run
-This application depends on tangle-connect, a locally built library.
+# Tangle-Cruiser
+This application depends on tangle-connect, a locally built typescript library.
 To begin with, choose a base folder and clone tangle-cruiser and tangle-connect into the this folder. The detailed steps to follow are given below.
 
 ## Step 1 - Build tangle-connect
